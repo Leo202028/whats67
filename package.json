@@ -1,0 +1,14 @@
+{
+  "name": "watsapp",
+  "version": "1.0.0",
+  "description": "Projeto educacional de cadastro e login",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.2",
+    "mysql2": "^3.14.0"
+  }
+}

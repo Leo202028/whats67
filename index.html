@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Demo - Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0b1410;
+            color: #e9edef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+            padding: 28px 24px;
+            background: #111f1a;
+            border-radius: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #b5c9c1;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .campo {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #344b42;
+            border-radius: 10px;
+            background: #182923;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #00d084;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .principal {
+            background: #00c981;
+            color: #062d20;
+            margin-top: 2px;
+        }
+
+        .principal:hover {
+            background: #00b875;
+        }
+
+        .alternar {
+            margin-top: 12px;
+            border: 1px solid #00c981;
+            color: #00d995;
+            background: transparent;
+        }
+
+        .alternar:hover {
+            background: #18382c;
+        }
+
+        .rodape {
+            margin-top: 25px;
+            text-align: center;
+            color: #91aaa0;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .mensagem {
+            display: none;
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .mensagem.erro {
+            color: #ff737d;
+        }
+
+        .mensagem.sucesso {
+            color: #00d995;
+        }
+
+        .oculto {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <h1 id="titulo">Criar conta</h1>
+
+        <p class="subtitulo" id="subtitulo">
+            Cadastre um usuário para sua demonstração.
+        </p>
+
+        <form id="formulario">
+            <div class="campo" id="campoNome">
+                <label for="nome">Nome</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Digite seu nome"
+                    maxlength="100"
+                    autocomplete="name"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="telefone">Número de telefone</label>
+                <input
+                    type="tel"
+                    id="telefone"
+                    name="telefone"
+                    placeholder="11987654321"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    pattern="[0-9]{10,15}"
+                    minlength="10"
+                    maxlength="15"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="senha">Senha</label>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Mínimo de 8 caracteres"
+                    minlength="8"
+                    maxlength="72"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
+
+            <button class="principal" type="submit" id="botao">
+                Cadastrar
+            </button>
+        </form>
+
+        <p id="mensagem" class="mensagem" role="status" aria-live="polite"></p>
+
+        <p
+            id="textoAlternar"
+            style="text-align:center; margin-top:25px; color:#b5c9c1;"
+        >
+            Já tem uma conta?
+        </p>
+
+        <button class="alternar" id="botaoAlternar" type="button">
+            Voltar ao login
+        </button>
+
+        <p class="rodape">
+            Projeto de demonstração para fins educacionais.<br>
+            Não é um serviço oficial do WhatsApp.
+        </p>
+    </main>
+
+    <script>
+        const formulario = document.getElementById("formulario");
+        const campoNome = document.getElementById("campoNome");
+        const nome = document.getElementById("nome");
+        const telefone = document.getElementById("telefone");
+        const senha = document.getElementById("senha");
+        const titulo = document.getElementById("titulo");
+        const subtitulo = document.getElementById("subtitulo");
+        const botao = document.getElementById("botao");
+        const botaoAlternar = document.getElementById("botaoAlternar");
+        const textoAlternar = document.getElementById("textoAlternar");
+        const mensagem = document.getElementById("mensagem");
+
+        let modoCadastro = true;
+
+        function mostrarMensagem(texto, tipo) {
+            mensagem.textContent = texto;
+            mensagem.className = "mensagem " + tipo;
+            mensagem.style.display = "block";
+        }
+
+        function limparMensagem() {
+            mensagem.textContent = "";
+            mensagem.style.display = "none";
+            mensagem.className = "mensagem";
+        }
+
+        function alternarModo() {
+            modoCadastro = !modoCadastro;
+
+            formulario.reset();
+            limparMensagem();
+
+            if (modoCadastro) {
+                titulo.textContent = "Criar conta";
+                subtitulo.textContent =
+                    "Cadastre um usuário para sua demonstração.";
+                botao.textContent = "Cadastrar";
+                campoNome.classList.remove("oculto");
+                nome.required = true;
+                senha.autocomplete = "new-password";
+                textoAlternar.textContent = "Já tem uma conta?";
+                botaoAlternar.textContent = "Voltar ao login";
+            } else {
+                titulo.textContent = "Entrar";
+                subtitulo.textContent =
+                    "Entre com sua conta de demonstração.";
+                botao.textContent = "Entrar";
+                campoNome.classList.add("oculto");
+                nome.required = false;
+                senha.autocomplete = "current-password";
+                textoAlternar.textContent = "Ainda não tem uma conta?";
+                botaoAlternar.textContent = "Criar conta";
+            }
+        }
+
+        botaoAlternar.addEventListener("click", alternarModo);
+
+        formulario.addEventListener("submit", async function(evento) {
+            evento.preventDefault();
+            limparMensagem();
+
+            const numero = telefone.value.trim();
+            const senhaValor = senha.value;
+            const nomeValor = nome.value.trim();
+
+            if (!/^\d{10,15}$/.test(numero)) {
+                mostrarMensagem(
+                    "Digite um telefone com 10 a 15 números, sem espaços.",
+                    "erro"
+                );
+                return;
+            }
+
+            if (senhaValor.length < 8 || senhaValor.length > 72) {
+                mostrarMensagem(
+                    "A senha deve ter entre 8 e 72 caracteres.",
+                    "erro"
+                );
+                return;
+            }
+
+            if (modoCadastro && !nomeValor) {
+                mostrarMensagem("Digite seu nome.", "erro");
+                return;
+            }
+
+            const dados = modoCadastro
+                ? {
+                    nome: nomeValor,
+                    telefone: numero,
+                    senha: senhaValor
+                }
+                : {
+                    telefone: numero,
+                    senha: senhaValor
+                };
+
+            const rota = modoCadastro
+                ? "/api/auth/cadastro"
+                : "/api/auth/login";
+
+            botao.disabled = true;
+            botao.textContent = "Aguarde...";
+
+            try {
+                const resposta = await fetch(rota, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                // Lê a resposta como texto primeiro para evitar
+                // o erro "Unexpected end of JSON input".
+                const texto = await resposta.text();
+                let resultado = {};
+
+                if (texto.trim()) {
+                    try {
+                        resultado = JSON.parse(texto);
+                    } catch {
+                        throw new Error(
+                            "O servidor retornou uma resposta inválida. Confira o terminal do Node.js."
+                        );
+                    }
+                } else {
+                    throw new Error(
+                        "O servidor retornou uma resposta vazia. Confira o main.js e o terminal do Node.js."
+                    );
+                }
+
+                if (!resposta.ok) {
+                    throw new Error(
+                        resultado.erro || resultado.mensagem ||
+                        "Não foi possível completar a operação."
+                    );
+                }
+
+                if (modoCadastro) {
+                    mostrarMensagem(
+                        resultado.mensagem ||
+                        "Cadastro realizado! Agora faça login.",
+                        "sucesso"
+                    );
+
+                    // Mantém o formulário preenchido com o telefone
+                    // para facilitar o teste de login.
+                    senha.value = "";
+                    alternarModo();
+                    telefone.value = numero;
+
+                    mostrarMensagem(
+                        "Cadastro realizado! Entre com seu telefone e senha.",
+                        "sucesso"
+                    );
+                } else {
+                    mostrarMensagem(
+                        "Login realizado com sucesso! Olá, " +
+                        (resultado.usuario?.nome || "usuário") + "!",
+                        "sucesso"
+                    );
+
+                    console.log("Usuário de demonstração:", resultado.usuario);
+                }
+            } catch (erro) {
+                mostrarMensagem(
+                    erro.message ||
+                    "Não foi possível conectar ao servidor. Verifique se o Node.js está rodando.",
+                    "erro"
+                );
+            } finally {
+                botao.disabled = false;
+                botao.textContent = modoCadastro ? "Cadastrar" : "Entrar";
+            }
+        });
+    </script>
+</body>
+</html>
